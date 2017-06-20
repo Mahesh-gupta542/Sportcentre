@@ -5,7 +5,9 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.Collection;
+
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -51,8 +53,7 @@ public class SportServlet extends HttpServlet {
 		// TODO Auto-generated method stub
 		if (request.getParameter("selectedValue").equalsIgnoreCase("Cricket")){
 try{
-			HashMap<Integer, String> MatchList =new HashMap<Integer, String>();
-			HashMap<Integer, String> MatchScores =new HashMap<Integer, String>();
+
 			URL url = new URL("http://cricapi.com/api/matches/?apikey=8vFya3q0knOJ9XrkBVqJeCdQtNr1");
 			HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 			conn.setRequestMethod("GET");
@@ -73,13 +74,16 @@ try{
 				cricMtchs=output;
 			}
 			JSONObject apiRes= new JSONObject(cricMtchs);
+
 			JSONArray cricMtchsArr = apiRes.getJSONArray("matches");
 			String MtchTitle="";
+			JSONObject outJson = new JSONObject();
+		    Collection<JSONObject> items = new ArrayList<JSONObject>();
 			for (int i = 0; i<cricMtchsArr.length(); i++ ){
-				
+				System.out.println(cricMtchsArr.getJSONObject(i).getBoolean("matchStarted"));
 				if (cricMtchsArr.getJSONObject(i).getBoolean("matchStarted")){
 					MtchTitle=cricMtchsArr.getJSONObject(i).getString("team-1")+" vs "+cricMtchsArr.getJSONObject(i).getString("team-2");
-					MatchList.put(cricMtchsArr.getJSONObject(i).getInt("unique_id"), MtchTitle);
+
 					url = new URL("http://cricapi.com/api/cricketScore/?unique_id="+cricMtchsArr.getJSONObject(i).getInt("unique_id")+"&apikey=8vFya3q0knOJ9XrkBVqJeCdQtNr1");
 					conn = (HttpURLConnection) url.openConnection();
 					conn.setRequestMethod("GET");
@@ -90,16 +94,21 @@ try{
 						mtchScore=output;
 					}
 					JSONObject mtchScoreJson= new JSONObject(mtchScore);
-					MatchScores.put(cricMtchsArr.getJSONObject(i).getInt("unique_id"), mtchScoreJson.getString("score"));
+					JSONObject item1 = new JSONObject();
+				    item1.put("unique_id", cricMtchsArr.getJSONObject(i).getInt("unique_id"));
+				    item1.put("title", MtchTitle);
+				    item1.put("score", mtchScoreJson.getString("score"));
+				    items.add(item1);
+				    
 					
 				}
 			}
+			outJson.put("data", new JSONArray(items));
 			
-			System.out.println(MatchList.size());
-			System.out.println(MatchScores.size());
+			System.out.println(outJson.toString());
+			//response.setContentType("application/json");
+			response.getWriter().print(outJson);
 			
-			response.getWriter().append("output from Cricapi: ").append(cricMtchs);
-			//System.out.println(cricMtchs);
 			
 			
 		}catch (Exception e){
