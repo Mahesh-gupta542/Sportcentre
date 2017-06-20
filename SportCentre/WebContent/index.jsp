@@ -51,11 +51,12 @@
 	<div class="body">
 		<div id="result">
 			<h2>Welcome to the Sports World</h2>
+			<button>Cricket</button>
 			<p>
 							</p>
 			<ul>
-				<li id="cricketDiv">
-					<a href=""><img src="images/figure2.jpg" alt="" style="height: 350px; width: 250px"></a> <button>Cricket</button>
+				<li >
+					<a href=""><img src="images/figure2.jpg" alt="" style="height: 350px; width: 250px"></a> 
 				</li>
 				<li>
 					<a href=""><img src="images/figure3.jpg" alt="" style="height: 350px; width: 250px"></a> <input type="submit" name="selectedValue" value="Fotball" style="padding: 5px 15px; background:#ccc; border:0 none; cursor:pointer; -webkit-border-radius: 5px; border-radius: 5px;">
